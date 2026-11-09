@@ -92,7 +92,7 @@ Windows releases are currently unsigned; `codesign_windows.bat` and `tools/relea
 
 ## Continuous integration
 
-`.github/workflows/ci.yml` runs the tests on macOS and Windows, builds the Windows engine (the build runs both models) and packages a Windows candidate on every push to `main` and every pull request, and keeps the ZIP as a workflow artifact. The full archive check, `tools/release/verify_windows.py`, needs more memory for BiRefNet than GitHub's Windows runners provide: it runs on a Windows PC before each release. Workflow artifacts are test builds, not releases: official builds are signed by the maintainer and distributed at [nicolasdiolez.com/maskbridge](https://nicolasdiolez.com/maskbridge), with their SHA-256 in the GitHub release notes.
+`.github/workflows/ci.yml` runs the tests on macOS and Windows, builds the Windows engine (the build runs both models) and packages a Windows candidate on every push to `main` and every pull request, without keeping the archive. A manual run (`workflow_dispatch`) keeps the ZIP as a workflow artifact for 7 days, for testing only. The full archive check, `tools/release/verify_windows.py`, needs more memory for BiRefNet than GitHub's Windows runners provide: it runs on a Windows PC before each release. Workflow artifacts are test builds, not releases: official builds are distributed at [nicolasdiolez.com/maskbridge](https://nicolasdiolez.com/maskbridge), with their SHA-256 in the GitHub release notes. The macOS build is signed and notarized; the Windows build is not code-signed yet.
 
 ## Installing your build
 
