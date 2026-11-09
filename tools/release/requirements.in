@@ -1,0 +1,9 @@
+-r ../../MaskBridge.lrplugin/backend/requirements.txt
+pyinstaller==6.17.0
+setuptools==83.0.0
+pytest==9.0.3
+lupa==2.8
+# Needed by PyInstaller on Windows; include in the common lock, too.
+pefile==2023.2.7
+pywin32-ctypes==0.2.3
+colorama==0.4.6

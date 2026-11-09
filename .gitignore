@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+build/
+build_tmp/
+dist/
+dist_*/
+
+# Virtual environments
+.venv/
+.venv-*/
+venv/
+
+# Models: downloaded by tools/fetch_models.py
+MaskBridge.lrplugin/backend/models/*.onnx
+
+# Engine built by tools/release/release.py
+MaskBridge.lrplugin/backend/maskbridge_engine
+MaskBridge.lrplugin/backend/maskbridge_engine.previous
+MaskBridge.lrplugin/backend/maskbridge_engine.exe
+
+# Runtime files
+*.log
+.server_port
+.server_token
+*.lrplugin/temp/
+
+# Packages and verification output
+*.zip
+*.zip.sha256
+MaskBridge_v*_Windows/
+MaskBridge_v*_macOS/
+native-validation/
+native-validation*.json
+
+# Lightroom SDK (not redistributable)
+LrC_*_SDK/
+
+# System
+.DS_Store
+Thumbs.db

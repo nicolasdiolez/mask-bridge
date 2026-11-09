@@ -1,0 +1,81 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      distribution:
+        description: 'Build the unsigned Windows distribution archive (no publication)'
+        type: boolean
+        default: false
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+
+jobs:
+  macos-tests:
+    runs-on: macos-14
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Restore models
+        uses: actions/cache@v4
+        with:
+          path: MaskBridge.lrplugin/backend/models/*.onnx
+          key: models-${{ hashFiles('tools/fetch_models.py') }}
+      - name: Install locked build environment
+        run: |
+          python -m venv .venv-release
+          .venv-release/bin/python -m pip install pip==26.2.1
+          .venv-release/bin/python -m pip install --require-hashes -r tools/release/requirements-lock.txt
+      - name: Fetch and verify models
+        run: .venv-release/bin/python tools/fetch_models.py
+      - name: Run Python and Lua tests
+        run: .venv-release/bin/python -m pytest MaskBridge.lrplugin/backend/tests -q
+
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Restore models
+        uses: actions/cache@v4
+        with:
+          path: MaskBridge.lrplugin/backend/models/*.onnx
+          key: models-${{ hashFiles('tools/fetch_models.py') }}
+      - name: Install locked build environment
+        run: |
+          python -m venv .venv-release
+          .venv-release\Scripts\python -m pip install pip==26.2.1
+          .venv-release\Scripts\python -m pip install --require-hashes -r tools/release/requirements-lock.txt
+      - name: Fetch and verify models
+        run: .venv-release\Scripts\python tools/fetch_models.py
+      - name: Run Python and Lua tests
+        run: .venv-release\Scripts\python -m pytest MaskBridge.lrplugin/backend/tests -q
+      # The build runs both models with the frozen engine. The full archive
+      # check (tools/release/verify_windows.py) needs more memory for BiRefNet
+      # than GitHub's Windows runners provide; it runs on a Windows PC before
+      # each release.
+      - name: Build engine and exercise both models
+        run: .venv-release\Scripts\python tools/release/release.py build
+      - name: Package Windows candidate
+        if: ${{ !inputs.distribution }}
+        run: .venv-release\Scripts\python tools/release/release.py package --candidate
+      - name: Package unsigned Windows distribution
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.distribution }}
+        run: .venv-release\Scripts\python tools/release/release.py package --allow-unsigned-windows
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MaskBridge-Windows-${{ inputs.distribution && 'distribution' || 'candidate' }}
+          path: MaskBridge_v*_Windows*.zip
+          if-no-files-found: error
