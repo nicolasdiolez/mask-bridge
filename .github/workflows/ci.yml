@@ -74,8 +74,13 @@ jobs:
       - name: Package unsigned Windows distribution
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.distribution }}
         run: .venv-release\Scripts\python tools/release/release.py package --allow-unsigned-windows
+      # GitHub is not a download channel for installable builds: pushes and
+      # pull requests only check that the archive packages; a manual run keeps
+      # it for a week, for testing.
       - uses: actions/upload-artifact@v4
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         with:
           name: MaskBridge-Windows-${{ inputs.distribution && 'distribution' || 'candidate' }}
           path: MaskBridge_v*_Windows*.zip
           if-no-files-found: error
+          retention-days: 7

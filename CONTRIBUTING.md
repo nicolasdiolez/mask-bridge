@@ -9,9 +9,11 @@ Open an [issue](https://github.com/nicolasdiolez/mask-bridge/issues) with:
 - your system (macOS version and chip, or Windows version) and Lightroom Classic version;
 - the Mask Bridge version (Plug-in Manager);
 - what you did, what you expected, what happened;
-- the diagnostic report: **File › Plug-in Manager › Mask Bridge › Copy diagnostic report**, then paste it into the issue (it includes the end of the engine log).
+- the diagnostic report: **File › Plug-in Manager › Mask Bridge › Copy diagnostic report**. It includes the end of the engine log, with local paths (your user name, your folders) and photo file names. Read it before pasting it into the issue and replace anything you would rather keep private, or send it to maskbridge@nicolasdiolez.com instead.
 
 Do not attach photos you cannot share publicly.
+
+To report a security problem, do not open an issue: see [SECURITY.md](SECURITY.md).
 
 ## Rules every change must keep
 
